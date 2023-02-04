@@ -33,7 +33,7 @@ class RegisterController {
         [name, email, phonenumber, bcryptPassword]
       );
       const jwtToken = jwtGenerator(newUser.rows[0].id);
-      document.cookie = `jwtToken=${jwtToken}`
+    
       return res.status(200).json({ jwtToken });
     } catch (err) {
       console.error(err.message);

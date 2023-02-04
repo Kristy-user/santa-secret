@@ -33,7 +33,7 @@ class LoginController {
         return res.status(401).json('Invalid Credential');
       }
       const jwtToken = jwtGenerator(user.rows[0].id);
-      document.cookie = `jwtToken=${jwtToken}`
+    
       return res.json({ jwtToken });
     } catch (err) {
       console.error(err.message);

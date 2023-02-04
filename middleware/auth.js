@@ -4,7 +4,7 @@ require('dotenv').config();
 class AuthController {
   async auth(req, res, next) {
    
-    const token = document.cookie.jwtToken ||req.header('jwtToken') || req.body.jwtToken;
+    const token = req.header('jwtToken') || req.body.jwtToken;
 
     if (!token) {
       return res.status(403).json({ msg: 'authorization denied' });
