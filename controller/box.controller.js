@@ -10,7 +10,7 @@ class BoxController {
     res.json(newBox.rows[0]);
   }
 
-  // http://localhost:8080/api/box?id=1
+  // santa-secret-clone.up.railway.app/box?id=1
   async getBoxesByUser(req, res) {
     const id = req.query.id;
     console.log(id);
