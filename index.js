@@ -9,9 +9,9 @@ const app = express();
 const corsOptions = {
   origin: ['http://localhost:8080']
 }
-app.use(cors(corsOptions),express.json());
-app.use('/', accountRouter);
-app.use('/', boxRouter);
+app.use(express.json());
+app.use('/',cors(corsOptions), accountRouter);
+app.use('/',cors(corsOptions), boxRouter);
 app.use('/account',cors(corsOptions), userRouter);
 app.get('/', (req, res) => {
   res.send('Hello, World!');
