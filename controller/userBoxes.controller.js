@@ -14,7 +14,7 @@ class UserBoxesController {
    try {
     const {id, userBoxes, accountId } = req.body;
     const boxes = await db.query(
-      `UPDATE user-boxes set  user_boxes=$1, account_id=$2 WHERE id =$3 RETURNING *`,
+      `UPDATE "user-boxes" set  user_boxes=$1, account_id=$2 WHERE id =$3 RETURNING *`,
       [userBoxes, accountId, id]
     );
     res.json(boxes.rows[0]);
@@ -26,7 +26,7 @@ class UserBoxesController {
   // santa-secret-clone.up.railway.app/user-boxes?id=1
   async getBoxesByUser(req, res) {
     const id = req.query.id;
-    const userBoxes = await db.query(`SELECT * FROM user-boxes WHERE account_id = $1`, [id]);
+    const userBoxes = await db.query(`SELECT * FROM "user-boxes" WHERE account_id = $1`, [id]);
     res.json(userBoxes.rows);
   }
 
