@@ -6,13 +6,11 @@ const cors = require('cors')
 const PORT = process.env.PORT || 8080;
 const app = express();
 
-const corsOptions = {
-  origin: ['http://localhost:8080']
-}
-app.use(express.json());
-app.use('/',cors(corsOptions), accountRouter);
-app.use('/',cors(corsOptions), boxRouter);
-app.use('/account',cors(corsOptions), userRouter);
+
+app.use(cors(),express.json());
+app.use('/',cors(), accountRouter);
+app.use('/',cors(), boxRouter);
+app.use('/account',cors(), userRouter);
 app.get('/', (req, res) => {
   res.send('Hello, World!');
 });
