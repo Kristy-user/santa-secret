@@ -7,13 +7,12 @@ const PORT = process.env.PORT || 8080;
 const app = express();
 
 const corsOptions = {
-  origin: 'http://localhost:8080/',
-  optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
+  origin: ['http://localhost:8080']
 }
 app.use(cors(corsOptions),express.json());
 app.use('/', accountRouter);
 app.use('/', boxRouter);
-app.use('/account', userRouter);
+app.use('/account',cors(corsOptions), userRouter);
 app.get('/', (req, res) => {
   res.send('Hello, World!');
 });
