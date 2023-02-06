@@ -17,7 +17,7 @@ class UserBoxesController {
       `UPDATE "user-boxes" set  user_boxes=$1, account_id=$2 WHERE id =$3 RETURNING *`,
       [userBoxes, accountId, id]
     );
-    res.json(boxes.rows[0]);
+   return res.json(boxes.rows[0]);
   } catch (e) {
     console.log(e);
   }
@@ -34,7 +34,7 @@ class UserBoxesController {
   async deleteUserBoxes(req, res) {
    try {
       const id = req.params.id;
-      const userBoxes = await db.query(`DELETE FROM user-boxes WHERE id = $1`, [id]);
+      const userBoxes = await db.query(`DELETE FROM "user-boxes" WHERE id = $1`, [id]);
       res.json(userBoxes.rows[0]);
       } 
   catch (e) {
