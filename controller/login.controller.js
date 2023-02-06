@@ -33,8 +33,8 @@ class LoginController {
         return res.status(401).json('Invalid Credential');
       }
       const jwtToken = jwtGenerator(user.rows[0].id);
-    
-      return res.json({ jwtToken });
+     
+      return res.json({id:user.rows[0].id, name: user.rows[0].name, email :user.rows[0].email,phonenumber:user.rows[0].phonenumber, jwtToken });
     } catch (err) {
       console.error(err.message);
       res.status(500).json('Server error');

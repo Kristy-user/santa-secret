@@ -27,14 +27,13 @@ class RegisterController {
       }
       const salt = await bcrypt.genSalt(10);
       const bcryptPassword = await bcrypt.hash(password, salt);
-      console.log(bcryptPassword);
       let newUser = await db.query(
         'INSERT INTO account (name, email, phonenumber, password) VALUES ($1, $2, $3,$4) RETURNING *',
         [name, email, phonenumber, bcryptPassword]
       );
       const jwtToken = jwtGenerator(newUser.rows[0].id);
-    
-      return res.status(200).json({ jwtToken });
+      console.log(newUser.rows[0])
+      return res.status(200).json({id:newUser.rows[0].id, name: newUser.rows[0].name, email :newUser.rows[0].email,phonenumber:newUser.rows[0].phonenumber, jwtToken });
     } catch (err) {
       console.error(err.message);
       res.status(500).send('Server error', err);
