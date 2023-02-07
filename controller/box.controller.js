@@ -12,9 +12,13 @@ class BoxController {
 
    async getBoxesByUser(req, res) {
     const id = req.query.id;
-    console.log(id);
     const boxes = await db.query(`SELECT * FROM box WHERE admin_id = $1`, [id]);
     res.json(boxes.rows);
+  }
+  async getBoxesByKey(req, res) {
+    const key = req.params.key;
+    const boxes = await db.query(`SELECT * FROM box WHERE invited_key = $1`, [key]);
+    res.json(boxes.rows[0]);
   }
   async updateBox(req, res) {
     try {
