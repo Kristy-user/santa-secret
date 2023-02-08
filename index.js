@@ -19,7 +19,8 @@ app.use('/',cors(), cardRouter)
 app.use('/',cors(), feedbackRouter)
 app.use('/account',cors(), userRouter);
 app.get('/', (req, res) => {
-  res.send('Hello, World!');
+  res.send(`Copy this link to see server settings:
+    https://app.diagrams.net/?src=about#G1ijDBrWag4UfjRtG6K1ovRU0qZ8VHgfhg`);
 });
 
 app.listen(PORT, () => console.log(`Server is connected on ${PORT}`));

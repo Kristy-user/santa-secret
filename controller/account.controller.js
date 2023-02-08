@@ -3,12 +3,18 @@ const bcrypt = require('bcrypt');
 
 class AccountController {
   async updateAccount(req, res) {
-    const { id, name, email, phonenumber, password,  } = req.body;
-    const user = await db.query('SELECT * FROM account WHERE email = $1', [
-      email,
-    ]);
-    if (user.rows[0].id !==id) {
-      return res.status(401).json('User with this email already exist!');
+    const {id, name, email, phonenumber, password} = req.body;
+    const user = await db.query("SELECT * FROM account WHERE id = $1", [id]);
+    const userByEmail = await db.query(
+      "SELECT * FROM account WHERE email = $1",
+      [email]
+    );
+    console.log(userByEmail.rows);
+    if (
+      userByEmail.rows.length > 0 &&
+      user.rows[0].id !== userByEmail.rows[0].id
+    ) {
+      return res.status(401).json("User with this email already exist!");
     }
     const salt = await bcrypt.genSalt(10);
     const bcryptPassword = await bcrypt.hash(password, salt);
