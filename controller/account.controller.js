@@ -9,22 +9,26 @@ class AccountController {
       "SELECT * FROM account WHERE email = $1",
       [email]
     );
-    console.log(userByEmail.rows);
+  
     if (
       userByEmail.rows.length > 0 &&
       user.rows[0].id !== userByEmail.rows[0].id
     ) {
       return res.status(401).json("User with this email already exist!");
     }
-    const salt = await bcrypt.genSalt(10);
-    const bcryptPassword = await bcrypt.hash(password, salt);
+    let bcryptPassword;
+    if (password){
+      const salt = await bcrypt.genSalt(10);
+    bcryptPassword = await bcrypt.hash(password, salt);}
+    
     const updateAccount = await db.query(
-      `UPDATE account set name = $1, email = $2, phonenumber = $3, password = $4  WHERE id =$5 RETURNING *`,
+      `WITH used_parameters AS (
+      SELECT $1, $2, $3, $4) UPDATE account set name = ${name !== undefined ? '$1' : 'name'}, email = ${email !== undefined ? '$2' : 'email'}, phonenumber = ${phonenumber !== undefined ? '$3' : 'phonenumber'}, password = ${password !== undefined ? '$4' : 'password'}  WHERE id =$5 RETURNING *`,
       [name, email, phonenumber, bcryptPassword, id]
     );
-   res.json(updateAccount.rows[0]);
+    res.json(updateAccount.rows[0]);
   }
- 
+
   async deleteAccount(req, res) {
     const id = req.params.id;
     const account = await db.query(`DELETE FROM account WHERE id = $1`, [id]);
