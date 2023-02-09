@@ -23,10 +23,12 @@ class UserBoxesController {
   }
 }
 
-  // santa-secret-clone.up.railway.app/user-boxes?id=1
   async getBoxesByUser(req, res) {
-    const id = req.query.id;
-    const userBoxes = await db.query(`SELECT * FROM "user-boxes" WHERE account_id = $1`, [id]);
+    const id = req.params.id;
+    const userBoxes = await db.query(
+      `SELECT * FROM "user-boxes" WHERE account_id = $1`,
+      [id]
+    );
     res.json(userBoxes.rows);
   }
 
