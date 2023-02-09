@@ -10,9 +10,10 @@ class BoxController {
     res.json(newBox.rows[0]);
   }
 
-   async getBoxesByUser(req, res) {
-    const id = req.query.id;
-    const boxes = await db.query(`SELECT * FROM box WHERE admin_id = $1`, [id]);
+  async getBoxesById(req, res) {
+    const idBox = req.query.id 
+    const idAdmin = req.query.admin;
+    const boxes = idBox ? await db.query(`SELECT * FROM box WHERE box_id = $1`, [idBox]) : idAdmin ? await db.query(`SELECT * FROM box WHERE admin_id = $1`, [idAdmin]) : [];
     res.json(boxes.rows);
   }
   async getBoxesByKey(req, res) {
