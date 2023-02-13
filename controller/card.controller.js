@@ -4,7 +4,7 @@ class CardController {
   async createCard(req, res) {
     const { userName, wardId, cardImg, randomKey, wishes, boxId, userId } = req.body;
     const newCard = await db.query(
-      `INSERT INTO card (user_name, ward_id, card_img, random_key, wishes, box_id) values ($1, $2, $3, $4, $5, $6. $7 ) RETURNING *`,
+      `INSERT INTO card (user_name, ward_id, card_img, random_key, wishes, box_id, user_id) values ($1, $2, $3, $4, $5, $6, $7 ) RETURNING *`,
       [userName, wardId, cardImg, randomKey, wishes, boxId,userId ]
     );
     res.json(newCard.rows[0]);
