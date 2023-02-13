@@ -2,11 +2,11 @@ const db = require("../db");
 
 class BoxController {
   async createBox(req, res) {
-    const {boxName, boxImg, year, invitedKey, cardsId, adminId, isDraw} =
+    const {boxName, boxImg, year, invitedKey, cardsId, adminId, isDraw, adminName} =
       req.body;
     const newBox = await db.query(
-      `INSERT INTO box (box_name, box_img, year, invited_key, cards_id, admin_id, is_draw) values ($1, $2, $3, $4, $5, $6, $7 ) RETURNING *`,
-      [boxName, boxImg, year, invitedKey, cardsId, adminId, isDraw]
+      `INSERT INTO box (box_name, box_img, year, invited_key, cards_id, admin_id, is_draw, admin_name) values ($1, $2, $3, $4, $5, $6, $7, $8 ) RETURNING *`,
+      [boxName, boxImg, year, invitedKey, cardsId, adminId, isDraw, adminName]
     );
     res.json(newBox.rows[0]);
   }
@@ -19,9 +19,7 @@ class BoxController {
       : idAdmin
       ? await db.query(`SELECT * FROM box WHERE admin_id = $1`, [idAdmin])
       : [];
-    if (idBox) {
-      return res.json(boxes.rows[0]);
-    } else return res.json(boxes.rows);
+    res.json(boxes.rows);
   }
   async getBoxesByKey(req, res) {
     const key = req.params.key;
@@ -30,13 +28,30 @@ class BoxController {
     ]);
     res.json(boxes.rows[0]);
   }
+
   async updateBox(req, res) {
     try {
-      const {id, boxName, boxImg, year, invitedKey, cardsId, adminId, isDraw} =
+      const {id, boxName, boxImg, year, invitedKey, cardsId, adminId, isDraw, adminName} =
         req.body;
+      console.log(
+        id, boxName, boxImg, year, invitedKey, cardsId, adminId, isDraw, adminName
+      );
       const box = await db.query(
-        `UPDATE box set box_name = $1, box_img = $2, year = $3,invited_key = $4, cards_id = $5, admin_id =$6, is_draw = $7  WHERE box_id =$8 RETURNING *`,
-        [boxName, boxImg, year, invitedKey, cardsId, adminId, isDraw, id]
+        `WITH used_parameters AS (
+        SELECT $1, $2, $3, $4, $5::integer[], $6::integer, $7::boolean, $8) UPDATE box set box_name = ${
+          boxName !== undefined ? '$1' : 'box_name'
+        }, box_img =  ${boxImg !== undefined ? '$2' : 'box_img'}, year = ${
+          year !== undefined ? '$3' : 'year'
+        },invited_key = ${
+          invitedKey !== undefined ? '$4' : 'invited_key'
+        }, cards_id = ${cardsId !== undefined ? '$5' : 'cards_id'}, admin_id =${
+          adminId !== undefined ? '$6' : 'admin_id'
+        }, is_draw = ${
+          isDraw !== undefined ? '$7' : 'is_draw'
+        }, admin_name = ${
+          adminName !== undefined ? '$8' : 'admin_name'
+        }   WHERE box_id =$9 RETURNING *`,
+        [boxName, boxImg, year, invitedKey, cardsId, adminId, isDraw, adminName, id]
       );
       res.json(box.rows[0]);
     } catch (e) {
