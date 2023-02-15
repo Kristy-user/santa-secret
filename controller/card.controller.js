@@ -1,42 +1,48 @@
-const db = require('../db');
+const db = require("../db");
 
 class CardController {
   async createCard(req, res) {
-    const { userName, wardId, cardImg, randomKey, wishes, boxId, userId } = req.body;
+    const {userName, wardId, cardImg, randomKey, wishes, boxId, userId, phone} =
+      req.body;
     const newCard = await db.query(
-      `INSERT INTO card (user_name, ward_id, card_img, random_key, wishes, box_id, user_id) values ($1, $2, $3, $4, $5, $6, $7 ) RETURNING *`,
-      [userName, wardId, cardImg, randomKey, wishes, boxId,userId ]
+      `INSERT INTO card (user_name, ward_id, card_img, random_key, wishes, box_id, user_id, phone) values ($1, $2, $3, $4, $5, $6, $7,$8 ) RETURNING *`,
+      [userName, wardId, cardImg, randomKey, wishes, boxId, userId, phone]
     );
     res.json(newCard.rows[0]);
   }
 
-   async getCardsByBox(req, res) {
+  async getCardsByBox(req, res) {
     const id = req.query.id;
     const cards = await db.query(`SELECT * FROM card WHERE box_id = $1`, [id]);
     res.json(cards.rows);
   }
   async updateCard(req, res) {
     try {
-      const { id, userName, wardId, cardImg, randomKey, wishes, boxId, userId } =
-        req.body;
+      const {
+        id,
+        userName,
+        wardId,
+        cardImg,
+        randomKey,
+        wishes,
+        boxId,
+        userId,
+        phone,
+      } = req.body;
       const card = await db.query(
         `WITH used_parameters AS (
-          SELECT $1, $2::integer, $3, $4, $5, $6::integer, $7::integer) UPDATE card set user_name = ${
+          SELECT $1, $2::integer, $3, $4, $5, $6::integer, $7::integer,$8) UPDATE card set user_name = ${
             userName !== undefined ? "$1" : "user_name"
-          }, ward_id = ${
-            wardId !== undefined ? "$2" : "ward_id"
-          }, card_img = ${
-            cardImg !== undefined ? "$3" : "card_img"
-          },random_key = ${
-            randomKey !== undefined ? "$4" : "random_key"
-          }, wishes = ${
-            wishes !== undefined ? "$5" : "wishes"
-          }, box_id =${
-            boxId !== undefined ? "$6" : "box_id"
-          }, user_id = ${
-           userId !== undefined ? "$7" : "user_id"
-          }  WHERE card_id =$8 RETURNING *`,
-        [userName, wardId, cardImg, randomKey, wishes, boxId, userId ,id]
+          }, ward_id = ${wardId !== undefined ? "$2" : "ward_id"}, card_img = ${
+          cardImg !== undefined ? "$3" : "card_img"
+        },random_key = ${
+          randomKey !== undefined ? "$4" : "random_key"
+        }, wishes = ${wishes !== undefined ? "$5" : "wishes"}, box_id =${
+          boxId !== undefined ? "$6" : "box_id"
+        }, user_id = ${userId !== undefined ? "$7" : "user_id"},phone = ${
+          phone !== undefined ? "$8" : "phone"
+        }  WHERE card_id =$9 RETURNING *`,
+        [userName, wardId, cardImg, randomKey, wishes, boxId, userId, phone, id]
       );
       res.json(card.rows[0]);
     } catch (e) {
