@@ -2,19 +2,50 @@ const db = require("../db");
 
 class CardController {
   async createCard(req, res) {
-    const {userName, wardId, cardImg, randomKey, wishes, boxId, userId, phone} =
-      req.body;
-    const newCard = await db.query(
-      `INSERT INTO card (user_name, ward_id, card_img, random_key, wishes, box_id, user_id, phone) values ($1, $2, $3, $4, $5, $6, $7,$8 ) RETURNING *`,
-      [userName, wardId, cardImg, randomKey, wishes, boxId, userId, phone]
-    );
-    res.json(newCard.rows[0]);
+    try {
+      const {
+        userName,
+        wardId,
+        cardImg,
+        wishes,
+        boxId,
+        userId,
+        phone,
+        wardGift,
+        cardGift,
+      } = req.body;
+      const newCard = await db.query(
+        `INSERT INTO card (user_name, ward_id, card_img, wishes, box_id, user_id, phone, ward_gift, card_gift) values ($1, $2, $3, $4, $5, $6, $7, $8, $9 ) RETURNING *`,
+        [
+          userName,
+          wardId,
+          cardImg,
+          wishes,
+          boxId,
+          userId,
+          phone,
+          wardGift,
+          cardGift,
+        ]
+      );
+      res.json(newCard.rows[0]);
+    } catch (e) {
+      res.json({error: e.message});
+      console.log(e);
+    }
   }
 
   async getCardsByBox(req, res) {
-    const id = req.query.id;
-    const cards = await db.query(`SELECT * FROM card WHERE box_id = $1`, [id]);
-    res.json(cards.rows);
+    try {
+      const id = req.query.id;
+      const cards = await db.query(`SELECT * FROM card WHERE box_id = $1`, [
+        id,
+      ]);
+      res.json(cards.rows);
+    } catch (e) {
+      res.json(e);
+      console.log(e);
+    }
   }
   async updateCard(req, res) {
     try {
@@ -23,36 +54,67 @@ class CardController {
         userName,
         wardId,
         cardImg,
-        randomKey,
         wishes,
         boxId,
         userId,
         phone,
+        wardGift,
+        cardGift,
       } = req.body;
       const card = await db.query(
         `WITH used_parameters AS (
-          SELECT $1, $2::integer, $3, $4, $5, $6::integer, $7::integer,$8) UPDATE card set user_name = ${
+          SELECT $1, $2::integer, $3, $4, $5::integer, $6::integer, $7, $8::boolean, $9::boolean) UPDATE card set user_name = ${
             userName !== undefined ? "$1" : "user_name"
           }, ward_id = ${wardId !== undefined ? "$2" : "ward_id"}, card_img = ${
           cardImg !== undefined ? "$3" : "card_img"
-        },random_key = ${
-          randomKey !== undefined ? "$4" : "random_key"
-        }, wishes = ${wishes !== undefined ? "$5" : "wishes"}, box_id =${
-          boxId !== undefined ? "$6" : "box_id"
-        }, user_id = ${userId !== undefined ? "$7" : "user_id"},phone = ${
-          phone !== undefined ? "$8" : "phone"
-        }  WHERE card_id =$9 RETURNING *`,
-        [userName, wardId, cardImg, randomKey, wishes, boxId, userId, phone, id]
+        }, wishes = ${wishes !== undefined ? "$4" : "wishes"}, box_id =${
+          boxId !== undefined ? "$5" : "box_id"
+        }, user_id = ${userId !== undefined ? "$6" : "user_id"}, phone = ${
+          phone !== undefined ? "$7" : "phone"
+        }, ward_gift = ${
+          wardGift !== undefined ? "$8" : "ward_gift"
+        }, card_gift = ${
+          cardGift !== undefined ? "$9" : "card_gift"
+        }  WHERE card_id =$10 RETURNING *`,
+        [
+          userName,
+          wardId,
+          cardImg,
+          wishes,
+          boxId,
+          userId,
+          phone,
+          wardGift,
+          cardGift,
+          id,
+        ]
       );
-      res.json(card.rows[0]);
+      console.log(req.body);
+      if (!card.rowCount) {
+        res.status(404).json({
+          message: "Card with such ID is not found",
+        });
+      } else res.json(card.rows[0]);
     } catch (e) {
+      res.json(e.detail);
       console.log(e);
     }
   }
   async deleteCard(req, res) {
-    const id = req.params.id;
-    const card = await db.query(`DELETE FROM card WHERE card_id = $1`, [id]);
-    res.json(card.rows[0]);
+    try {
+      const id = req.params.id;
+      const card = await db.query(`DELETE FROM card WHERE card_id = $1`, [id]);
+      if (!card.rowCount) {
+        res.status(404).json(`Card with ID = ${id} was not found`);
+      } else
+        res.status(204).json({
+          status: "success",
+          data: null,
+        });
+      return true;
+    } catch (e) {
+      res.send(e.message);
+    }
   }
 }
 

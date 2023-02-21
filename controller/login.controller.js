@@ -1,6 +1,6 @@
-const bcrypt = require('bcrypt');
-const db = require('../db');
-const jwt = require('jsonwebtoken');
+const bcrypt = require("bcrypt");
+const db = require("../db");
+const jwt = require("jsonwebtoken");
 
 function jwtGenerator(id) {
   const payload = {
@@ -14,30 +14,32 @@ function jwtGenerator(id) {
 }
 class LoginController {
   async login(req, res) {
-    const { email, password } = req.body;
+    const {email, password} = req.body;
     try {
-      const user = await db.query('SELECT * FROM account WHERE email = $1', [
+      const user = await db.query("SELECT * FROM account WHERE email = $1", [
         email,
       ]);
-
       if (user.rows.length === 0) {
-        return res.status(401).json('Invalid Credential');
+        return res.status(401).json("Invalid Credential");
       }
-
       const validPassword = await bcrypt.compare(
         password,
         user.rows[0].password
       );
-
       if (!validPassword) {
-        return res.status(401).json('Invalid Credential');
+        return res.status(401).json("Invalid Credential");
       }
       const jwtToken = jwtGenerator(user.rows[0].id);
-     
-      return res.json({id:user.rows[0].id, name: user.rows[0].name, email :user.rows[0].email,phonenumber:user.rows[0].phonenumber, jwtToken });
+      return res.json({
+        id: user.rows[0].id,
+        name: user.rows[0].name,
+        email: user.rows[0].email,
+        phonenumber: user.rows[0].phonenumber,
+        jwtToken,
+      });
     } catch (err) {
       console.error(err.message);
-      res.status(500).json('Server error');
+      res.status(500).json("Server error");
     }
   }
 }
