@@ -113,7 +113,6 @@ class BoxController {
           status: "success",
           data: null,
         });
-      return true;
     } catch (e) {
       res.send(e.message);
     }
