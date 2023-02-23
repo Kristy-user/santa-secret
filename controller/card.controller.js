@@ -16,7 +16,7 @@ class CardController {
         email,
       } = req.body;
       const newCard = await db.query(
-        `INSERT INTO card (user_name, ward_id, card_img, wishes, box_id, user_id, phone, ward_gift, card_gift) values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10 ) RETURNING *`,
+        `INSERT INTO card (user_name, ward_id, card_img, wishes, box_id, user_id, phone, ward_gift, card_gift, email) values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10 ) RETURNING *`,
         [
           userName,
           wardId,
