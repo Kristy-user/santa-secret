@@ -13,9 +13,10 @@ class CardController {
         phone,
         wardGift,
         cardGift,
+        email,
       } = req.body;
       const newCard = await db.query(
-        `INSERT INTO card (user_name, ward_id, card_img, wishes, box_id, user_id, phone, ward_gift, card_gift) values ($1, $2, $3, $4, $5, $6, $7, $8, $9 ) RETURNING *`,
+        `INSERT INTO card (user_name, ward_id, card_img, wishes, box_id, user_id, phone, ward_gift, card_gift) values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10 ) RETURNING *`,
         [
           userName,
           wardId,
@@ -26,6 +27,7 @@ class CardController {
           phone,
           wardGift,
           cardGift,
+          email,
         ]
       );
       res.json(newCard.rows[0]);
@@ -60,10 +62,11 @@ class CardController {
         phone,
         wardGift,
         cardGift,
+        email,
       } = req.body;
       const card = await db.query(
         `WITH used_parameters AS (
-          SELECT $1, $2::integer, $3, $4, $5::integer, $6::integer, $7, $8::boolean, $9::boolean) UPDATE card set user_name = ${
+          SELECT $1, $2::integer, $3, $4, $5::integer, $6::integer, $7, $8::boolean, $9::boolean, $10) UPDATE card set user_name = ${
             userName !== undefined ? "$1" : "user_name"
           }, ward_id = ${wardId !== undefined ? "$2" : "ward_id"}, card_img = ${
           cardImg !== undefined ? "$3" : "card_img"
@@ -75,7 +78,9 @@ class CardController {
           wardGift !== undefined ? "$8" : "ward_gift"
         }, card_gift = ${
           cardGift !== undefined ? "$9" : "card_gift"
-        }  WHERE card_id =$10 RETURNING *`,
+        }, email = ${
+          email !== undefined ? "$10" : "email"
+        }  WHERE card_id =$11 RETURNING *`,
         [
           userName,
           wardId,
@@ -86,10 +91,11 @@ class CardController {
           phone,
           wardGift,
           cardGift,
+          email,
           id,
         ]
       );
-      console.log(req.body);
+
       if (!card.rowCount) {
         res.status(404).json({
           message: "Card with such ID is not found",
